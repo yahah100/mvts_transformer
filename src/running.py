@@ -171,7 +171,7 @@ def evaluate(evaluator):
     with torch.no_grad():
         aggr_metrics, per_batch = evaluator.evaluate(epoch_num=None, keep_all=True)
     eval_runtime = time.time() - eval_start_time
-    print()
+
     print_str = 'Evaluation Summary: '
     for k, v in aggr_metrics.items():
         if v is not None:
@@ -207,15 +207,16 @@ def validate(val_evaluator, tensorboard_writer, config, best_metrics, best_value
     for k, v in aggr_metrics.items():
         if type(v) == list:
             for i, v_i in enumerate(v):
-                val_dict[f'test/{k}_{i}'] = v_i
-                tensorboard_writer.add_scalar(f'{k}_{i}/val', v, epoch)
+                val_dict[f'val/{k}_{i}'] = v_i
+                # tensorboard_writer.add_scalar(f'{k}_{i}/val', v, epoch)
                 print_str += '{}_{}: {:8f} | '.format(k, i, v)
-        elif type(v) in [int, float]:
-            val_dict[f'test/{k}'] = v
-            tensorboard_writer.add_scalar('{}/val'.format(k), v, epoch)
+        else:
+            val_dict[f'val/{k}'] = v
+            # tensorboard_writer.add_scalar(f'{k}/val', v, epoch)
             print_str += '{}: {:8f} | '.format(k, v)
 
     logger.info(print_str)
+    print(f"Validation metrics: {aggr_metrics} {val_dict}")
     mlflow.log_metrics(val_dict)
 
     if config['key_metric'] in NEG_METRICS:

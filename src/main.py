@@ -46,10 +46,9 @@ def main(config):
     # mlflow 
     tags = config["logging_tag"].split(",")
     tags = [tuple(tag.split(":")) for tag in tags]
+    print(f"tags: {tags}")
     mlflow_logger = MLFlowLogger(experiment_name=config["logging_project"], run_name=f"{generate_funny_name()}")
-    mlflow.set_experiment_tags({tag[0]: tag[1] for tag in tags})
-    mlflow.pytorch.autolog()
-
+    
     # Add file logging besides stdout
     file_handler = logging.FileHandler(os.path.join(config['output_dir'], 'output.log'))
     logger.addHandler(file_handler)
@@ -234,7 +233,9 @@ def main(config):
                                        print_interval=config['print_interval'], console=config['console'])
     
     mlflow_logger.start_run()
-    mlflow.log_params(config)
+    mlflow.log_params(params=config)
+
+    mlflow.set_experiment_tags({tag[0]: tag[1] for tag in tags})
 
     tensorboard_writer = SummaryWriter(config['tensorboard_dir'])
 
@@ -259,9 +260,11 @@ def main(config):
         print(f"Train metrics: {aggr_metrics_train}")
         epoch_runtime = time.time() - epoch_start_time
         print_str = 'Epoch {} Training Summary: '.format(epoch)
+        
         for k, v in aggr_metrics_train.items():
             tensorboard_writer.add_scalar('{}/train'.format(k), v, epoch)
             print_str += '{}: {:8f} | '.format(k, v)
+
         logger.info(print_str)
         logger.info("Epoch runtime: {} hours, {} minutes, {} seconds\n".format(*utils.readable_time(epoch_runtime)))
         total_epoch_time += epoch_runtime
@@ -278,7 +281,7 @@ def main(config):
                                                                   best_metrics, best_value, epoch)
             print(f"val metrics: {aggr_metrics_train}")
             val_loss = aggr_metrics_val['loss']
-            mlflow.log_metric("val/loss", val_loss)
+            mlflow.log_metrics("val/loss", val_loss)
             metrics_names, metrics_values = zip(*aggr_metrics_val.items())
             metrics.append(list(metrics_values))
 
@@ -323,24 +326,27 @@ def main(config):
                                 pin_memory=True,
                                 collate_fn=lambda x: collate_fn(x, max_len=model.max_len))
     model.eval()
+    test_log_dict = {}
     with torch.no_grad():
         test_evaluator = runner_class(model, test_loader, device, loss_module,
                                             print_interval=config['print_interval'], console=config['console'])
         aggr_metrics_test, per_batch_test = test_evaluator.evaluate(keep_all=True)
+        print("-"* 50)
+        print(f"test metrics: {aggr_metrics_test}")
         print_str = 'Test Summary: '
-        test_log_dict = {}
+
         for k, v in aggr_metrics_test.items():
             if type(v) == list:
                 for i, v_i in enumerate(v):
                     test_log_dict[f'test/{k}_{i}'] = v_i
-            elif type(v) in [int, float]:
+            else:
                 test_log_dict[f'test/{k}'] = v
             
                 
-        mlflow.log_metrics(test_log_dict)
-        logger.info(print_str)
+    mlflow.log_metrics(test_log_dict)
+    logger.info(print_str)
 
-
+    mlflow_logger.end_run()
     return best_value
 
 
