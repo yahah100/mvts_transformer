@@ -1,24 +1,22 @@
 logging-project:
-  values: ["asimow-classification"]
+  values: ["asimow-mvts"]
 logging-tag:
-  values: ["HyperparamSearch:TS-Transformer-1"]
-output-dir:
+  values: ["HyperparamSearch:MVTS-Transformer-1"]
+output_dir:
   values: ["experiments"]
 comment:
   values: ["classification from Scratch"]
 name:
   values: ["asimow_fromScratch"]
-records-file:
-  values: ["Classification_records.xls"]
-data-dir:
+data_dir:
   values: ["data/asimow/"]
-data-class:
+data_class:
   values: ["arcweld"]
 pattern:
   values: ["train"]
-val-pattern:
+val_pattern:
   values: ["val"]
-test-pattern:
+test_pattern:
   values: ["test"]
 epochs:
   values: [1]
@@ -26,15 +24,15 @@ lr:
   values: [0.001]
 optimizer:
   values: ["RAdam"]
-pos-encoding:
+pos_encoding:
   values: ["learnable"]
 task:
   values: ["classification"]
-batch-size:
+batch_size:
   values: [512]
-hidden-dim:
+d_model:
   values: [64, 128, 256]
-n-heads:
+num_heads:
   values: [4]
-n-blocks:
+num_layers:
   values: [2, 4]

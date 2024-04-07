@@ -42,9 +42,12 @@ def main(config):
     total_eval_time = 0
 
     total_start_time = time.time()
-
+    print(config)
     # mlflow 
-    mlflow_logger = MLFlowLogger(experiment_name="asimow-mvts", run_name=f"{generate_funny_name()}")
+    tags = config["logging_tag"].split(",")
+    tags = [tuple(tag.split(":")) for tag in tags]
+    mlflow_logger = MLFlowLogger(experiment_name=config["logging_project"], run_name=f"{generate_funny_name()}")
+    mlflow.set_experiment_tags({tag[0]: tag[1] for tag in tags})
     mlflow.pytorch.autolog()
 
     # Add file logging besides stdout

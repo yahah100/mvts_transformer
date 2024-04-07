@@ -162,6 +162,8 @@ class Options(object):
                                  help='Activation to be used in transformer encoder')
         self.parser.add_argument('--normalization_layer', choices={'BatchNorm', 'LayerNorm'}, default='BatchNorm',
                                  help='Normalization layer to be used internally in transformer encoder')
+        self.parser.add_argument('--logging-project' , type=str, default='default', help='MLFlow project name')
+        self.parser.add_argument('--logging-tag' , type=str, default='', help='MLFlow experiment name')
 
     def parse(self):
 

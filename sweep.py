@@ -125,8 +125,8 @@ def main(params):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Example script")
     parser.add_argument("--n-trials", type=int, default=1)
-    parser.add_argument("--python_script", type=str, default="train_classification_model.py")
-    parser.add_argument("--file-path", type=str, default="sweep_files/tstransformer.yml")
+    parser.add_argument("--python_script", type=str, default="src/main.py")
+    parser.add_argument("--file-path", type=str, default="sweep_files/mvtstransformer.yml")
     args = parser.parse_args()
     
     main(args)
