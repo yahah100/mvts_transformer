@@ -102,12 +102,17 @@ tensorboard dev upload --name my_exp --logdir path/to/output_dir
 
 ```bash
 python src/main.py --output_dir path/to/experiments --comment "regression from Scratch" --name $1_fromScratch_Regression --records_file Regression_records.xls --data_dir path/to/Datasets/Regression/$1/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 100 --lr 0.001 --optimizer RAdam  --pos_encoding learnable --task regression
+
+
+python src/main.py --output_dir experiments --comment "regression from Scratch" --name BeijingPM25Quality_fromScratch_Regression --records_file Regression_records.xls --data_dir data/Regression/BeijingPM25Quality/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 100 --lr 0.001 --optimizer RAdam  --pos_encoding learnable --task regression
 ```
 
 ### Classification
 
 ```bash
 python src/main.py --output_dir experiments --comment "classification from Scratch" --name $1_fromScratch --records_file Classification_records.xls --data_dir path/to/Datasets/Classification/$1/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 400 --lr 0.001 --optimizer RAdam  --pos_encoding learnable  --task classification  --key_metric accuracy
+
+python src/main.py --output_dir experiments --comment "classification from Scratch" --name asimow_fromScratch --records_file Classification_records.xls --data_dir data/asimow/ --data_class arcweld --pattern train --val_pattern val --test_pattern test --epochs 15 --lr 0.001 --optimizer RAdam  --pos_encoding learnable  --task classification  --key_metric accuracy
 ```
 
 ## Pre-train models (unsupervised learning through input masking)

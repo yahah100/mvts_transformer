@@ -20,7 +20,7 @@ import sklearn
 from utils import utils, analysis
 from models.loss import l2_reg_loss
 from datasets.dataset import ImputationDataset, TransductionDataset, ClassiregressionDataset, collate_unsuperv, collate_superv
-
+import mlflow
 
 logger = logging.getLogger('__main__')
 
@@ -202,12 +202,21 @@ def validate(val_evaluator, tensorboard_writer, config, best_metrics, best_value
     logger.info("Avg batch val. time: {} seconds".format(avg_val_batch_time))
     logger.info("Avg sample val. time: {} seconds".format(avg_val_sample_time))
 
-    print()
+    val_dict = {}
     print_str = 'Epoch {} Validation Summary: '.format(epoch)
     for k, v in aggr_metrics.items():
-        tensorboard_writer.add_scalar('{}/val'.format(k), v, epoch)
-        print_str += '{}: {:8f} | '.format(k, v)
+        if type(v) == list:
+            for i, v_i in enumerate(v):
+                val_dict[f'test/{k}_{i}'] = v_i
+                tensorboard_writer.add_scalar(f'{k}_{i}/val', v, epoch)
+                print_str += '{}_{}: {:8f} | '.format(k, i, v)
+        elif type(v) in [int, float]:
+            val_dict[f'test/{k}'] = v
+            tensorboard_writer.add_scalar('{}/val'.format(k), v, epoch)
+            print_str += '{}: {:8f} | '.format(k, v)
+
     logger.info(print_str)
+    mlflow.log_metrics(val_dict)
 
     if config['key_metric'] in NEG_METRICS:
         condition = (aggr_metrics[config['key_metric']] < best_value)
@@ -479,9 +488,15 @@ class SupervisedRunner(BaseRunner):
             targets = np.concatenate(per_batch['targets'], axis=0).flatten()
             class_names = np.arange(probs.shape[1])  # TODO: temporary until I decide how to pass class names
             metrics_dict = self.analyzer.analyze_classification(predictions, targets, class_names)
-
+            
             self.epoch_metrics['accuracy'] = metrics_dict['total_accuracy']  # same as average recall over all classes
             self.epoch_metrics['precision'] = metrics_dict['prec_avg']  # average precision over all classes
+            self.epoch_metrics['recall'] = metrics_dict['rec_avg']
+            print(metrics_dict.keys())
+            print(metrics_dict)
+            self.epoch_metrics['f1'] = metrics_dict['f1'][0]
+
+
 
             if self.model.num_classes == 2:
                 false_pos_rate, true_pos_rate, _ = sklearn.metrics.roc_curve(targets, probs[:, 1])  # 1D scores needed

@@ -33,7 +33,8 @@ from datasets.datasplit import split_dataset
 from models.ts_transformer import model_factory
 from models.loss import get_loss_module
 from optimizers import get_optimizer
-
+import mlflow.pytorch
+from mlflow_helper import MLFlowLogger, generate_funny_name
 
 def main(config):
 
@@ -41,6 +42,10 @@ def main(config):
     total_eval_time = 0
 
     total_start_time = time.time()
+
+    # mlflow 
+    mlflow_logger = MLFlowLogger(experiment_name="asimow-mvts", run_name=f"{generate_funny_name()}")
+    mlflow.pytorch.autolog()
 
     # Add file logging besides stdout
     file_handler = logging.FileHandler(os.path.join(config['output_dir'], 'output.log'))
@@ -224,6 +229,9 @@ def main(config):
                                  print_interval=config['print_interval'], console=config['console'])
     val_evaluator = runner_class(model, val_loader, device, loss_module,
                                        print_interval=config['print_interval'], console=config['console'])
+    
+    mlflow_logger.start_run()
+    mlflow.log_params(config)
 
     tensorboard_writer = SummaryWriter(config['tensorboard_dir'])
 
@@ -241,9 +249,12 @@ def main(config):
     for epoch in tqdm(range(start_epoch + 1, config["epochs"] + 1), desc='Training Epoch', leave=False):
         mark = epoch if config['save_all'] else 'last'
         epoch_start_time = time.time()
-        aggr_metrics_train = trainer.train_epoch(epoch)  # dictionary of aggregate epoch metrics
+        aggr_metrics_train = trainer.train_epoch(epoch)  
+        # dictionary of aggregate epoch metrics
+        train_loss = aggr_metrics_train['loss']
+        mlflow.log_metric("train/loss", train_loss)
+        print(f"Train metrics: {aggr_metrics_train}")
         epoch_runtime = time.time() - epoch_start_time
-        print()
         print_str = 'Epoch {} Training Summary: '.format(epoch)
         for k, v in aggr_metrics_train.items():
             tensorboard_writer.add_scalar('{}/train'.format(k), v, epoch)
@@ -262,6 +273,9 @@ def main(config):
         if (epoch == config["epochs"]) or (epoch == start_epoch + 1) or (epoch % config['val_interval'] == 0):
             aggr_metrics_val, best_metrics, best_value = validate(val_evaluator, tensorboard_writer, config,
                                                                   best_metrics, best_value, epoch)
+            print(f"val metrics: {aggr_metrics_train}")
+            val_loss = aggr_metrics_val['loss']
+            mlflow.log_metric("val/loss", val_loss)
             metrics_names, metrics_values = zip(*aggr_metrics_val.items())
             metrics.append(list(metrics_values))
 
@@ -296,6 +310,33 @@ def main(config):
 
     total_runtime = time.time() - total_start_time
     logger.info("Total runtime: {} hours, {} minutes, {} seconds\n".format(*utils.readable_time(total_runtime)))
+
+    test_dataset = dataset_class(test_data, test_indices)
+
+    test_loader = DataLoader(dataset=test_dataset,
+                                batch_size=config['batch_size'],
+                                shuffle=False,
+                                num_workers=config['num_workers'],
+                                pin_memory=True,
+                                collate_fn=lambda x: collate_fn(x, max_len=model.max_len))
+    model.eval()
+    with torch.no_grad():
+        test_evaluator = runner_class(model, test_loader, device, loss_module,
+                                            print_interval=config['print_interval'], console=config['console'])
+        aggr_metrics_test, per_batch_test = test_evaluator.evaluate(keep_all=True)
+        print_str = 'Test Summary: '
+        test_log_dict = {}
+        for k, v in aggr_metrics_test.items():
+            if type(v) == list:
+                for i, v_i in enumerate(v):
+                    test_log_dict[f'test/{k}_{i}'] = v_i
+            elif type(v) in [int, float]:
+                test_log_dict[f'test/{k}'] = v
+            
+                
+        mlflow.log_metrics(test_log_dict)
+        logger.info(print_str)
+
 
     return best_value
 

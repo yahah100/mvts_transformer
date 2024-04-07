@@ -30,3 +30,8 @@ _build
 logs
 
 .idea
+
+data/
+experiments/
+mlruns/
+src/mlflow_helper.py

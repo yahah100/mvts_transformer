@@ -1,0 +1,40 @@
+logging-project:
+  values: ["asimow-classification"]
+logging-tag:
+  values: ["HyperparamSearch:TS-Transformer-1"]
+output-dir:
+  values: ["experiments"]
+comment:
+  values: ["classification from Scratch"]
+name:
+  values: ["asimow_fromScratch"]
+records-file:
+  values: ["Classification_records.xls"]
+data-dir:
+  values: ["data/asimow/"]
+data-class:
+  values: ["arcweld"]
+pattern:
+  values: ["train"]
+val-pattern:
+  values: ["val"]
+test-pattern:
+  values: ["test"]
+epochs:
+  values: [1]
+lr:
+  values: [0.001]
+optimizer:
+  values: ["RAdam"]
+pos-encoding:
+  values: ["learnable"]
+task:
+  values: ["classification"]
+batch-size:
+  values: [512]
+hidden-dim:
+  values: [64, 128, 256]
+n-heads:
+  values: [4]
+n-blocks:
+  values: [2, 4]
