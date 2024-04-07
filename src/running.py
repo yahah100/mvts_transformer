@@ -210,7 +210,7 @@ def validate(val_evaluator, tensorboard_writer, config, best_metrics, best_value
                 val_dict[f'val/{k}_{i}'] = v_i
                 # tensorboard_writer.add_scalar(f'{k}_{i}/val', v, epoch)
                 print_str += '{}_{}: {:8f} | '.format(k, i, v)
-        else:
+        elif v is not None:
             val_dict[f'val/{k}'] = v
             # tensorboard_writer.add_scalar(f'{k}/val', v, epoch)
             print_str += '{}: {:8f} | '.format(k, v)

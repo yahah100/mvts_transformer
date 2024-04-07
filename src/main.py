@@ -281,7 +281,7 @@ def main(config):
                                                                   best_metrics, best_value, epoch)
             print(f"val metrics: {aggr_metrics_train}")
             val_loss = aggr_metrics_val['loss']
-            mlflow.log_metrics("val/loss", val_loss)
+            mlflow.log_metric("val/loss", val_loss)
             metrics_names, metrics_values = zip(*aggr_metrics_val.items())
             metrics.append(list(metrics_values))
 
@@ -331,7 +331,6 @@ def main(config):
         test_evaluator = runner_class(model, test_loader, device, loss_module,
                                             print_interval=config['print_interval'], console=config['console'])
         aggr_metrics_test, per_batch_test = test_evaluator.evaluate(keep_all=True)
-        print("-"* 50)
         print(f"test metrics: {aggr_metrics_test}")
         print_str = 'Test Summary: '
 
@@ -339,7 +338,7 @@ def main(config):
             if type(v) == list:
                 for i, v_i in enumerate(v):
                     test_log_dict[f'test/{k}_{i}'] = v_i
-            else:
+            elif v is not None:
                 test_log_dict[f'test/{k}'] = v
             
                 
