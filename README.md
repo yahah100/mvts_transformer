@@ -147,4 +147,11 @@ python src/main.py --output_dir experiments --comment "finetune for regression" 
 ### Classification
 ```bash
 python src/main.py --output_dir experiments --comment "finetune for classification" --name SpokenArabicDigits_finetuned --records_file Classification_records.xls --data_dir /path/to/Datasets/Classification/SpokenArabicDigits/ --data_class tsra --pattern TRAIN --val_pattern TEST --epochs 100 --lr 0.001 --optimizer RAdam --batch_size 128 --pos_encoding learnable --d_model 64 --load_model path/to/SpokenArabicDigits_pretrained/checkpoints/model_best.pth --task classification --change_output --key_metric accuracy
+
+
+srun python sweep.py --n-trials=10 --file-path="sweep_files/mvtstransformer.yml"
+
+python src/main.py --output_dir experiments --comment "pretraining through imputation" --name asimow_pretraining --records_file Imputation_records.xls --data_dir data/asimow/ --data_class arcweld --pattern train --val_pattern val --test_pattern test --epochs 40 --lr 0.001 --optimizer RAdam  --pos_encoding learnable --task imputation --batch_size 512 --d_model 256 --num_heads 4 --num_layers 4 --logging-tag "HyperparamSearch:MVTS-Transformer-2" --logging-project "asimow-mvts"
+
+python src/main.py --output_dir experiments --comment "finetune for classification" --name asimow_finetuned --records_file Classification_records.xls --data_dir data/asimow/  --data_class arcweld --pattern train --val_pattern val --test_pattern test --epochs 40 --lr 0.001 --optimizer RAdam --batch_size 512 --pos_encoding learnable --d_model 256 --num_heads 4 --num_layer 6 --load_model experiments/asimow_pretraining_2024-04-10_17-24-30_xEG/checkpoints/model_best.pth --task classification --change_output --key_metric accuracy --logging-tag "HyperparamSearch:Finetuning" --logging-project "asimow-mvts" 
 ```
