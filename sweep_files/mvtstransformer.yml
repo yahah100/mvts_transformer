@@ -19,7 +19,7 @@ val_pattern:
 test_pattern:
   values: ["test"]
 epochs:
-  values: [1]
+  values: [40]
 lr:
   values: [0.001]
 optimizer:

@@ -158,9 +158,6 @@ threadpoolctl==3.4.0
 tinycss2==1.2.1
 toml==0.10.2
 tomli==2.0.1
-torch==1.13.1+cu117
-torchaudio==0.13.1+cu117
-torchvision==0.14.1+cu117
 tornado==6.4
 tqdm==4.61.1
 traitlets==5.14.2
