@@ -1,13 +1,13 @@
 logging-project:
   values: ["asimow-mvts"]
 logging-tag:
-  values: ["HyperparamSearch:MVTS-Transformer-1"]
+  values: ["HyperparamSearch:MVTS-Transformer-2"]
 output_dir:
   values: ["experiments"]
 comment:
-  values: ["classification from Scratch"]
+  values: ["pretraining through imputation"]
 name:
-  values: ["asimow_fromScratch"]
+  values: ["asimow_pretraining"]
 data_dir:
   values: ["data/asimow/"]
 data_class:
@@ -27,7 +27,7 @@ optimizer:
 pos_encoding:
   values: ["learnable"]
 task:
-  values: ["classification"]
+  values: ["imputation"]
 batch_size:
   values: [512]
 d_model:
@@ -35,4 +35,4 @@ d_model:
 num_heads:
   values: [4]
 num_layers:
-  values: [2, 4]
+  values: [2, 4, 6]

@@ -128,7 +128,7 @@ Make sure that the network architecture parameters of the pretrained model match
 ```bash
 python src/main.py --output_dir experiments --comment "pretraining through imputation" --name $1_pretrained --records_file Imputation_records.xls --data_dir /path/to/$1/ --data_class tsra --pattern TRAIN --val_ratio 0.2 --epochs 700 --lr 0.001 --optimizer RAdam --batch_size 32 --pos_encoding learnable --d_model 128
 
-python src/main.py --output_dir experiments --comment "pretraining through imputation" --name asimow_pretraining --records_file Imputation_records.xls --data_dir data/asimow/ --data_class arcweld --pattern train --val_pattern val --test_pattern test --epochs 40 --lr 0.001 --optimizer RAdam  --pos_encoding learnable --task imputation  --key_metric accuracy --batch_size 512 --d_model 256 --num_heads 4 --num_layers 4 --logging-tag "HyperparamSearch:MVTS-Transformer-1" --logging-project "asimow-mvts"
+python src/main.py --output_dir experiments --comment "pretraining through imputation" --name asimow_pretraining --records_file Imputation_records.xls --data_dir data/asimow/ --data_class arcweld --pattern train --val_pattern val --test_pattern test --epochs 40 --lr 0.001 --optimizer RAdam  --pos_encoding learnable --task imputation  --batch_size 512 --d_model 256 --num_heads 4 --num_layers 4 --logging-tag "HyperparamSearch:MVTS-Transformer-1" --logging-project "asimow-mvts"
 
 python src/main.py --output_dir experiments --comment "pretraining through imputation" --name $1_pretrained --records_file Imputation_records.xls --data_dir /path/to/$1/ --data_class tsra --pattern TRAIN --val_ratio 0.2 --epochs 700 --lr 0.001 --optimizer RAdam --batch_size 32 --pos_encoding learnable --d_model 128
 ```
