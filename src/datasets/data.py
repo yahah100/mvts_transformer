@@ -467,7 +467,7 @@ class ArcWeldingData(BaseData):
         self.set_num_processes(n_proc=n_proc)
 
         self.all_df, self.labels_df = self.load_all(root_dir, file_list=file_list, pattern=pattern)
-        self.all_df = self.all_df.sort_values(by=['ID'])  # datasets is presorted
+        # self.all_df = self.all_df.sort_values(by=['ID'])  # datasets is presorted
         self.all_df = self.all_df.set_index('ID')
         self.all_IDs = self.all_df.index.unique()  # all sample (session) IDs
         self.max_seq_len = 200
