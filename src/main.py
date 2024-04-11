@@ -203,8 +203,13 @@ def main(config):
         with torch.no_grad():
             aggr_metrics_test, per_batch_test = test_evaluator.evaluate(keep_all=True)
         print_str = 'Test Summary: '
+        test_log_dict = {}
         for k, v in aggr_metrics_test.items():
-            print_str += '{}: {:8f} | '.format(k, v)
+            if type(v) == list:
+                for i, v_i in enumerate(v):
+                    test_log_dict[f'test/{k}_{i}'] = v_i
+            elif v is not None:
+                test_log_dict[f'test/{k}'] = v
         logger.info(print_str)
         return
     
