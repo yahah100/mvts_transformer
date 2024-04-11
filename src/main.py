@@ -208,8 +208,10 @@ def main(config):
             if type(v) == list:
                 for i, v_i in enumerate(v):
                     test_log_dict[f'test/{k}_{i}'] = v_i
+                    print_str += '{}: {:8f} | '.format(k, v_i)
             elif v is not None:
                 test_log_dict[f'test/{k}'] = v
+                print_str += '{}: {:8f} | '.format(k, v)	
         logger.info(print_str)
         return
     

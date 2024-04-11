@@ -158,6 +158,6 @@ python src/main.py --output_dir experiments --comment "finetune for classificati
 
 ## test
 
-python src/main.py --output_dir experiments --comment "test finetune for classification" --name asimow_finetuned --records_file Classification_records.xls --data_dir data/asimow/  --data_class arcweld --pattern train --val_pattern val --test_pattern test --epochs 40 --lr 0.001 --optimizer RAdam --batch_size 512 --pos_encoding learnable --d_model 128 --num_heads 4 --num_layer 6 --load_model experiments/asimow_finetuned_2024-04-11_10-33-29_zvF_model_best.pth --task classification --change_output --key_metric accuracy --logging-tag "HyperparamSearch:Finetuning-2" --logging-project "asimow-mvts" --test_only testset
+python src/main.py --output_dir experiments --comment "test finetune for classification" --name asimow_finetuned --records_file Classification_records.xls --data_dir data/asimow/  --data_class arcweld --pattern train --val_pattern val --test_pattern test --epochs 40 --lr 0.001 --optimizer RAdam --batch_size 512 --pos_encoding learnable --d_model 128 --num_heads 4 --num_layer 6 --load_model experiments/asimow_finetuned_2024-04-11_10-33-29_zvF_model_best.pth --task classification --key_metric accuracy --logging-tag "HyperparamSearch:Finetuning-2" --logging-project "asimow-mvts" --test_only testset
 
 ```
